@@ -1,0 +1,8 @@
+explainers:
+  tabular: ["lime", "shap", "mace"]
+  vision: ["gradcam", "integrated_gradients"]
+  nlp: ["lime", "polyjuice"]
+
+auto_explainer:
+  mode: "classification"
+  use_global: true
