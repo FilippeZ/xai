@@ -1,12 +1,14 @@
 <div align="center">
 
-# 🧠 Explainable Artificial Intelligence (XAI)
+# ⚖️ XAI Governance — AI Compliance for Clinical Software
 
-**Transforming AI from opaque "black boxes" to transparent, human-centric solutions**
+**Operationalizing Explainable AI to mitigate 'black box' risks in clinical systems**
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![GDPR](https://img.shields.io/badge/GDPR-Compliant-28a745)](https://gdpr.eu)
+[![EU AI Act](https://img.shields.io/badge/EU_AI_Act-High_Risk-fd7e14)](https://artificialintelligenceact.eu)
 [![LIME](https://img.shields.io/badge/XAI-LIME-orange)](https://github.com/marcotcr/lime)
 [![SHAP](https://img.shields.io/badge/XAI-SHAP-blueviolet)](https://github.com/shap/shap)
 
@@ -16,61 +18,83 @@
 
 ## 📋 Overview
 
-This project implements a **unified Explainable AI platform** based on the thesis *"Explainable Artificial Intelligence"* by Philippos-Paraskevas Zygouris. It provides a comprehensive framework for making machine learning models transparent and interpretable using state-of-the-art XAI methods.
+This project implements a **comprehensive AI governance framework** for clinical software, based on the thesis *"Explainable Artificial Intelligence"* by Philippos-Paraskevas Zygouris. It operationalizes **XAI controls** to ensure that all AI-driven decisions are **auditable** and satisfy **GDPR** and **EU AI Act** mandates for high-risk clinical systems.
 
-### ✨ Key Features
+### 🎯 The Problem
 
-| Feature | Description |
-|---------|-------------|
-| 🍋 **LIME** | Local surrogate models for tabular & text explanations |
-| 📊 **SHAP** | Game-theoretic feature attribution via Shapley values |
-| 🔥 **Grad-CAM** | CNN attention heatmaps for image classification |
-| 🔄 **Counterfactuals** | "What-if" analysis with L₀/L₁/L₂ proximity metrics |
-| 🧪 **Simulatability Lab** | Interactive experiment measuring explanation effectiveness |
-| 🖥️ **Streamlit Dashboard** | Premium interactive UI for exploring all methods |
+Modern AI in clinical software operates as a **"black box"**, creating critical risks:
+- An algorithm recommending surgery **without clear justification** could endanger lives
+- Models trained on specific demographics may **fail on others** without detection
+- Without explainability, clinicians face a **decision dilemma**: accept blindly or reject without cause
+- Non-compliance carries fines up to **€35 million** (EU AI Act) or **€20 million** (GDPR)
+
+### ✅ The Solution
+
+This platform transforms opaque **"black boxes"** into transparent **"glass boxes"** using XAI controls:
+
+| Control | XAI Method | What It Audits | Regulation |
+|---------|-----------|---------------|------------|
+| 🔍 **Transparency** | LIME, SHAP | Feature-level decision justification | GDPR Art. 22 |
+| 🔬 **Visual Inspection** | Grad-CAM | Spatial attribution for imaging AI | EU AI Act Art. 13 |
+| 🔄 **Causal Understanding** | Counterfactual | Actionable "what-if" scenarios | EU AI Act Art. 9 |
+| 🧪 **Simulatability** | Forward/CF Sim | Explanation effectiveness validation | EU AI Act Art. 14 |
 
 ---
 
 ## 🏗️ Architecture
 
-The project follows the **Omni XAI** four-layer architecture:
+The project combines the **Omni XAI** four-layer architecture with an **AI Governance Pipeline**:
 
 ```
-Input Layer → AutoExplainer → Explainers → Visualization
-(Data)        (Preprocessing)  (LIME/SHAP/   (Plots &
-               & Selection)    Grad-CAM)      Dashboard)
+Clinical AI System (High-Risk)
+    │
+    ├── EU AI Act Conformity Assessment
+    │
+    ├── XAI Controls Layer
+    │   ├── LIME / SHAP (Transparency)
+    │   ├── Grad-CAM (Visual Inspection)
+    │   ├── Counterfactuals (Causal Understanding)
+    │   └── Simulatability (Effectiveness Testing)
+    │
+    ├── Audit Trail (Decision Records + Compliance Tags)
+    │
+    ├── Human-in-the-Loop (Clinician Review & Override)
+    │
+    └── Compliant Decision (GDPR Art.22 + EU AI Act)
 ```
 
 ### 📂 Project Structure
 
 ```
 xai/
-├── app.py                    # Streamlit dashboard (entry point)
-├── requirements.txt          # Python dependencies
+├── app.py                        # Streamlit dashboard (entry point)
+├── requirements.txt              # Python dependencies
 ├── config/
-│   ├── model_config.yaml     # ML model parameters
-│   └── xai_config.yaml       # Explainer configuration
+│   ├── model_config.yaml         # ML model parameters
+│   └── xai_config.yaml           # Explainer + Governance configuration
 ├── src/
+│   ├── governance/               # 🆕 AI Governance Framework
+│   │   ├── framework.py          # Risk classification, controls, regulatory mappings
+│   │   ├── compliance.py         # GDPR + EU AI Act compliance checker & scoring
+│   │   └── audit_trail.py        # Audit record generation & report formatting
 │   ├── core/
-│   │   ├── input_layer.py    # Data loading (Iris, MNIST, 20-Newsgroups)
-│   │   ├── auto_explainer.py # Auto method selection by data type
-│   │   └── explainers.py     # Unified explainer wrappers
+│   │   ├── input_layer.py        # Data loading (Iris, MNIST, 20-Newsgroups)
+│   │   ├── auto_explainer.py     # Auto method selection by data type
+│   │   └── explainers.py         # Unified explainer wrappers
 │   ├── models/
-│   │   ├── train_model.py    # RandomForest, CNN, TF-IDF+LogReg
-│   │   └── load_model.py     # Model persistence utilities
+│   │   ├── train_model.py        # RandomForest, CNN, TF-IDF+LogReg
+│   │   └── load_model.py         # Model persistence utilities
 │   ├── methods/
-│   │   ├── model_agnostic.py # LIME (tabular + text), SHAP (Tree + Kernel)
-│   │   ├── model_specific.py # Grad-CAM with PyTorch hooks
-│   │   └── counterfactual.py # Greedy counterfactual search
+│   │   ├── model_agnostic.py     # LIME (tabular + text), SHAP (Tree + Kernel)
+│   │   ├── model_specific.py     # Grad-CAM with PyTorch hooks
+│   │   └── counterfactual.py     # Greedy counterfactual search
 │   ├── visualization/
-│   │   ├── plotting.py       # Plotly charts (LIME bars, SHAP, heatmaps)
-│   │   └── dashboard.py      # Streamlit helpers & architecture diagram
+│   │   ├── plotting.py           # Plotly charts (LIME bars, SHAP, heatmaps)
+│   │   └── dashboard.py          # Architecture diagrams & governance findings
 │   └── experiments/
-│       ├── simulations.py    # Forward & Counterfactual simulation engine
-│       └── evaluation.py     # Simulatability, Fidelity, L₀/L₁/L₂ metrics
-├── data/                     # Datasets (auto-downloaded)
-├── docs/references/          # Thesis PDF & presentation
-└── notebooks/                # Jupyter notebooks for analysis
+│       ├── simulations.py        # Forward & Counterfactual simulation engine
+│       └── evaluation.py         # Simulatability, Fidelity, L₀/L₁/L₂ metrics
+└── docs/references/              # Thesis PDF & presentation
 ```
 
 ---
@@ -95,11 +119,65 @@ streamlit run app.py
 
 | Page | What it does |
 |------|-------------|
-| 🏠 **Home** | Overview of the architecture and XAI methods |
+| 🏠 **Home** | Governance overview, key findings, architecture, XAI methods |
+| ⚖️ **AI Governance** | EU AI Act risk pyramid, governance controls, regulatory requirements |
+| 📋 **Compliance Audit** | Interactive GDPR/EU AI Act compliance checker with scoring |
+| 🏥 **Clinical XAI** | Black box vs glass box comparison, human-AI collaboration, audit records |
 | 📊 **Tabular XAI** | LIME & SHAP on the Iris dataset (RandomForest) |
 | 🖼️ **Image XAI** | Grad-CAM heatmaps on MNIST digits (CNN) |
 | 🔄 **Counterfactuals** | Generate "what-if" scenarios with proximity metrics |
-| 🧪 **Simulatability Lab** | Interactive experiment — can explanations help you? |
+| 🧪 **Simulatability Lab** | Interactive experiment — do explanations actually help? |
+
+---
+
+## ⚖️ Regulatory Compliance
+
+### GDPR (General Data Protection Regulation)
+
+| Article | Requirement | XAI Solution |
+|---------|------------|-------------|
+| **Art. 22** | Right to Explanation | LIME/SHAP per-instance attribution |
+| **Art. 13-14** | Transparency of Processing | SHAP global summaries + documentation |
+| **Art. 22.3** | Right to Contest | Counterfactual "what-if" analysis |
+
+### EU AI Act
+
+| Article | Requirement | XAI Solution |
+|---------|------------|-------------|
+| **Art. 9** | Risk Management System | Counterfactual sensitivity + risk matrix |
+| **Art. 13** | Transparency to Users | Grad-CAM + LIME visual/textual explanations |
+| **Art. 14** | Human Oversight | Simulatability testing + override mechanisms |
+| **Art. 15** | Accuracy & Robustness | L₀/L₁/L₂ metrics + model performance |
+| **Art. 17** | Quality Management | Audit trail + compliance dashboard |
+
+**Maximum Penalties:**
+- GDPR: up to **€20 million** or **4% of global annual turnover**
+- EU AI Act: up to **€35 million** or **7% of global annual turnover**
+
+---
+
+## 🏥 Clinical AI Governance
+
+### Black Box Risks Mitigated
+
+| Risk | Severity | XAI Mitigation |
+|------|----------|---------------|
+| Opaque Decision-Making | 🔴 Critical | LIME/SHAP feature attribution |
+| Undetected Bias | 🟠 High | SHAP cohort analysis |
+| Spurious Correlations | 🟠 High | Grad-CAM visual verification |
+| Clinician Trust Gap | 🟡 Medium | Human-in-the-loop design |
+| Regulatory Non-Compliance | 🔴 Critical | Full audit trail |
+| Illusion of Understanding | 🟡 Medium | Simulatability testing |
+
+### Audit Trail
+
+Every AI decision generates an audit record containing:
+- Unique Record ID and timestamp
+- Model type and accuracy
+- True and predicted labels
+- XAI method used and feature attributions
+- Compliance tags (GDPR Art. 22, EU AI Act Art. 13, etc.)
+- Human reviewer sign-off
 
 ---
 
@@ -115,20 +193,20 @@ Uses Shapley values from game theory to assign each feature a contribution score
 Computes gradients of the target class score w.r.t. the last convolutional layer, producing a spatial heatmap that highlights the regions a CNN relies on for its prediction.
 
 ### Counterfactual Explanations
-Answers *"What minimal change would flip the prediction?"* using a greedy feature-perturbation search toward the target class's feature distribution. Evaluated with L₀ (sparsity), L₁ (Manhattan), and L₂ (Euclidean) proximity metrics.
+Answers *"What minimal change would flip the prediction?"* using a greedy feature-perturbation search. Evaluated with L₀ (sparsity), L₁ (Manhattan), and L₂ (Euclidean) proximity metrics.
 
 ---
 
 ## 🧪 Simulatability Experiments
 
-The project includes a novel **Simulatability Lab** that replicates the thesis experiments:
+The **Simulatability Lab** replicates the thesis experiments:
 
-- **Forward Simulation**: Can you predict the model's output for new inputs? Does seeing LIME explanations improve your accuracy?
+- **Forward Simulation**: Can you predict the model's output? Does seeing LIME explanations improve your accuracy?
 - **Counterfactual Simulation**: Can you predict how the model reacts to input perturbations?
 
 **Simulatability Score** = Accuracy<sub>post</sub> − Accuracy<sub>pre</sub>
 
-A positive score indicates that explanations genuinely help users understand the model.
+A positive score indicates that explanations genuinely help users understand the model. A negative score reveals the **"illusion of understanding"** effect.
 
 ---
 
@@ -138,6 +216,7 @@ A positive score indicates that explanations genuinely help users understand the
 - **XAI Libraries**: LIME, SHAP
 - **Visualization**: Plotly, Matplotlib, Streamlit
 - **Data**: Iris, MNIST (OpenML), 20-Newsgroups
+- **Governance**: Custom compliance framework (GDPR + EU AI Act)
 
 ---
 
@@ -152,5 +231,5 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) for de
 ---
 
 <div align="center">
-<i>Making AI transparent, one explanation at a time.</i>
+<i>Making clinical AI transparent, auditable, and legally compliant — one explanation at a time.</i>
 </div>

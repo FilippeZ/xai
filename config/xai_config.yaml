@@ -6,3 +6,22 @@ explainers:
 auto_explainer:
   mode: "classification"
   use_global: true
+
+governance:
+  risk_level: "high"
+  domain: "clinical"
+  regulations:
+    - "GDPR"
+    - "EU AI Act"
+  controls:
+    transparency: ["lime", "shap"]
+    visual_inspection: ["gradcam"]
+    causal_understanding: ["counterfactual"]
+    simulatability: ["forward_simulation", "counterfactual_simulation"]
+  audit:
+    enabled: true
+    log_format: "structured"
+    compliance_tags: true
+  human_oversight:
+    required: true
+    override_enabled: true
