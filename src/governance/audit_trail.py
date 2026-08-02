@@ -31,6 +31,7 @@ class AuditRecord:
     decision_justified: bool
     human_reviewer: str = "Clinician (Human-in-the-Loop)"
     compliance_tags: List[str] = field(default_factory=list)
+    illusion_of_understanding: bool = False
 
     def to_dict(self) -> Dict:
         return asdict(self)
@@ -45,6 +46,7 @@ def generate_audit_record(
     xai_method: str,
     feature_attributions: Dict[str, float],
     confidence: Optional[float] = None,
+    illusion_of_understanding: bool = False,
 ) -> AuditRecord:
     """
     Create an audit-ready record for a single AI decision.
@@ -67,6 +69,8 @@ def generate_audit_record(
         Feature name -> importance weight
     confidence : float, optional
         Model's prediction confidence
+    illusion_of_understanding : bool, optional
+        Flag set if simulatability <= 0 (explanation failed to convey causal understanding)
 
     Returns
     -------
@@ -89,8 +93,16 @@ def generate_audit_record(
         + "."
     )
 
+    if illusion_of_understanding:
+        explanation_summary += " [AUDIT GATE REJECT: Illusion of Understanding detected (Simulatability <= 0)]"
+
     # Tag compliance
     compliance_tags = _determine_compliance_tags(xai_method)
+    if illusion_of_understanding:
+        compliance_tags.append("illusion_of_understanding: True")
+        compliance_tags.append("Audit Gate: REJECTED")
+
+    decision_justified = not illusion_of_understanding
 
     return AuditRecord(
         record_id=record_id,
@@ -104,8 +116,9 @@ def generate_audit_record(
         xai_method=xai_method,
         explanation_summary=explanation_summary,
         feature_attributions=feature_attributions,
-        decision_justified=True,
+        decision_justified=decision_justified,
         compliance_tags=compliance_tags,
+        illusion_of_understanding=illusion_of_understanding,
     )
 
 

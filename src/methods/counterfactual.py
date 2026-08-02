@@ -19,29 +19,32 @@ def generate_counterfactual(
     X_train: np.ndarray,
     feature_names: List[str],
     target_class: Optional[int] = None,
+    immutable_features: Optional[List[str]] = None,
     max_iterations: int = 100,
     step_size: float = 0.1,
 ) -> dict:
     """
-    Generate a counterfactual for a tabular instance.
+    Generate a counterfactual for a tabular instance subject to clinical constraints.
 
-    Strategy: greedily perturb features toward their training-set median
-    for the target class until the model flips its prediction.
+    Strategy: greedily perturb mutable features toward their training-set median
+    for the target class until the model flips its prediction. Immutable features
+    (e.g., age, sex, genetics) are held strictly constant.
 
     Parameters
     ----------
-    model         : classifier with .predict() and .predict_proba()
-    instance      : 1-D array of feature values
-    X_train       : training data (for computing class medians)
-    feature_names : list of feature names
-    target_class  : desired class (if None, any flip counts)
-    max_iterations: max perturbation steps
-    step_size     : fraction of the distance to move each iteration
+    model              : classifier with .predict() and .predict_proba()
+    instance           : 1-D array of feature values
+    X_train            : training data (for computing class medians)
+    feature_names      : list of feature names
+    target_class       : desired class (if None, any flip counts)
+    immutable_features : list of feature names that CANNOT be changed
+    max_iterations     : max perturbation steps
+    step_size          : fraction of the distance to move each iteration
 
     Returns
     -------
     dict with keys: original, counterfactual, changes, original_pred,
-                    new_pred, n_steps, success
+                    new_pred, n_steps, success, metrics (L0, L1, L2)
     """
     original_pred = int(model.predict(instance.reshape(1, -1))[0])
 
@@ -50,6 +53,13 @@ def generate_counterfactual(
         probs = model.predict_proba(instance.reshape(1, -1))[0]
         sorted_classes = np.argsort(probs)[::-1]
         target_class = int(sorted_classes[1]) if len(sorted_classes) > 1 else int(sorted_classes[0])
+
+    # Identify indices of immutable features
+    immutable_indices = set()
+    if immutable_features:
+        for fname in immutable_features:
+            if fname in feature_names:
+                immutable_indices.add(feature_names.index(fname))
 
     # Compute the median feature values for the target class in training set
     y_train = model.predict(X_train)
@@ -61,8 +71,11 @@ def generate_counterfactual(
 
     cf = instance.copy().astype(float)
     for step in range(1, max_iterations + 1):
-        # Move each feature toward the target median
+        # Move each feature toward the target median unless it is immutable
         direction = target_medians - cf
+        for idx in immutable_indices:
+            direction[idx] = 0.0
+
         cf = cf + step_size * direction
 
         pred = int(model.predict(cf.reshape(1, -1))[0])
@@ -76,6 +89,14 @@ def generate_counterfactual(
         if not np.isclose(instance[i], cf[i], atol=1e-4)
     }
 
+    # Proximity metrics
+    diff = cf - instance
+    metrics = {
+        "L0": int(np.count_nonzero(np.abs(diff) > 1e-4)),
+        "L1": float(np.sum(np.abs(diff))),
+        "L2": float(np.sqrt(np.sum(diff ** 2))),
+    }
+
     return {
         "original": instance.tolist(),
         "counterfactual": cf.tolist(),
@@ -85,6 +106,7 @@ def generate_counterfactual(
         "target_class": target_class,
         "n_steps": step,
         "success": new_pred == target_class,
+        "metrics": metrics,
     }
 
 

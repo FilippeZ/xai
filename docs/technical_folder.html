@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Τεχνικός Φάκελος SaMD — Κανονιστική Συμμόρφωση</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+        }
+
+        header {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, var(--bg) 100%);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        /* Documentation Sections */
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 10px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        strong {
+            color: var(--text-main);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Special highlights */
+        .ai-glow {
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(16, 185, 129, 0.05));
+        }
+
+        .ai-glow .section-number {
+            background: var(--accent);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .ai-glow h3 {
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .section { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="badge">Regulatory Intelligence</div>
+        <h1>Τεχνικός Φάκελος SaMD</h1>
+        <p class="subtitle">Τεκμηρίωση Κανονιστικής Συμμόρφωσης βάσει EU MDR/IVDR & EU AI Act για Λογισμικό ως Ιατροτεχνολογικό Προϊόν.</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- Section 1 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>Ταυτοποίηση & Γενικές Πληροφορίες</h2>
+            </div>
+            <div class="grid">
+                <div>
+                    <h3>Ταυτότητα Συσκευής</h3>
+                    <ul>
+                        <li><strong>Ονομασία:</strong> Εμπορική ονομασία και έκδοση λογισμικού.</li>
+                        <li><strong>UDI-DI:</strong> Βασικό UDI-DI (Μοναδικό Αναγνωριστικό).</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Κατάταξη Κινδύνου</h3>
+                    <ul>
+                        <li><strong>MDR Rule 11:</strong> Αιτιολόγηση κατηγορίας (Class I, IIa, IIb, III).</li>
+                        <li><strong>Στοιχεία Κατασκευαστή:</strong> Διεύθυνση και εξουσιοδοτημένος αντιπρόσωπος.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Περιγραφή Συσκευής & Προδιαγραφές</h2>
+            </div>
+            <ul>
+                <li><strong>Προβλεπόμενος Σκοπός:</strong> Ιατρική ένδειξη, πληθυσμός-στόχος και προφίλ χρήστη (επαγγελματίας vs ασθενής).</li>
+                <li><strong>Αρχιτεκτονική Λογισμικού:</strong> Διαγράμματα ροής δεδομένων, APIs και διασυνδέσεις δικτύου.</li>
+                <li><strong>Λειτουργικότητα:</strong> Περιγραφή αλγορίθμων και λογικής λήψης αποφάσεων.</li>
+                <li><strong>Μοντέλο Ανάπτυξης:</strong> On-premise, cloud-based ή mobile εφαρμογή.</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Σχεδιασμός & Ανάπτυξη (IEC 62304)</h2>
+            </div>
+            <div class="grid">
+                <div>
+                    <h3>Κύκλος Ζωής Λογισμικού</h3>
+                    <ul>
+                        <li><strong>SDLC:</strong> Τεκμηρίωση διαδικασίας ανάπτυξης και εργαλείων.</li>
+                        <li><strong>SOUP/OTS:</strong> Λίστα εξωτερικών βιβλιοθηκών και επικύρωσή τους.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Build Process</h3>
+                    <ul>
+                        <li><strong>Version Control:</strong> Διαχείριση πηγαίου κώδικα (π.χ. Git).</li>
+                        <li><strong>Pipelines:</strong> Διαδικασίες δημιουργίας (build) και εγκατάστασης.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2>Διαχείριση Κινδύνου (ISO 14971)</h2>
+            </div>
+            <ul>
+                <li><strong>Ανάλυση Κινδύνων:</strong> Εντοπισμός πηγών κινδύνου (π.χ. απώλεια δεδομένων, λανθασμένη διάγνωση).</li>
+                <li><strong>Μέτρα Ελέγχου:</strong> Κρυπτογράφηση, έλεγχος πρόσβασης και επικύρωση εισόδου δεδομένων.</li>
+                <li><strong>Κυβερνοασφάλεια:</strong> Threat modeling και πλάνο διαχείρισης ευπαθειών.</li>
+                <li><strong>Όφελος-Κίνδυνος:</strong> Αιτιολόγηση ότι τα κλινικά οφέλη υπερτερούν των κινδύνων.</li>
+            </ul>
+        </div>
+
+        <!-- Section 5 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2>Επαλήθευση & Επικύρωση (V&V)</h2>
+            </div>
+            <ul>
+                <li><strong>Software Verification:</strong> Unit, integration και system testing records.</li>
+                <li><strong>Κλινική Αξιολόγηση:</strong> Απόδειξη κλινικής ασφάλειας και απόδοσης (MDR Annex XIV).</li>
+                <li><strong>Usability (IEC 62366):</strong> Έκθεση αξιολόγησης διεπαφής χρήστη (Formative/Summative).</li>
+            </ul>
+        </div>
+
+        <!-- Section 6 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2>GSPR Checklist</h2>
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Αντιστοίχιση των Γενικών Απαιτήσεων Ασφάλειας και Απόδοσης (Annex I) με τα αποδεικτικά στοιχεία του φακέλου.</p>
+            <ul>
+                <li><strong>Traceability Matrix:</strong> Σύνδεση απαιτήσεων με αποτελέσματα δοκιμών.</li>
+            </ul>
+        </div>
+
+        <!-- Section 7 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <h2>Πληροφορίες Χρήστη (Labeling & IFU)</h2>
+            </div>
+            <ul>
+                <li><strong>Οδηγίες Χρήσης:</strong> eIFU, προϋποθέσεις συστήματος και προειδοποιήσεις.</li>
+                <li><strong>Screenshots:</strong> Οπτική απεικόνιση των UI warnings και ενδείξεων.</li>
+            </ul>
+        </div>
+
+        <!-- Section 8 -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">8</div>
+                <h2>Εποπτεία Μετά τη Διάθεση (PMS)</h2>
+            </div>
+            <ul>
+                <li><strong>PMS Plan:</strong> Στρατηγική συλλογής δεδομένων από την αγορά.</li>
+                <li><strong>PSUR:</strong> Περιοδική έκθεση επικαιροποίησης της ασφάλειας.</li>
+                <li><strong>PMCF Plan:</strong> Πλάνο κλινικής παρακολούθησης μετά τη διάθεση.</li>
+            </ul>
+        </div>
+
+        <!-- Section 9 -->
+        <div class="section ai-glow">
+            <div class="section-header">
+                <div class="section-number">9</div>
+                <h2>Απαιτήσεις EU AI Act</h2>
+            </div>
+            <ul>
+                <li><strong>Data Governance:</strong> Προέλευση, καθαρισμός και αντιπροσωπευτικότητα δεδομένων εκπαίδευσης.</li>
+                <li><strong>Ανθρώπινη Εποπτεία:</strong> Δυνατότητα παράκαμψης ή ερμηνείας των αποτελεσμάτων από τον άνθρωπο.</li>
+                <li><strong>Ακρίβεια & Στιβαρότητα:</strong> Metrics απόδοσης και ανθεκτικότητα σε κυβερνοεπιθέσεις.</li>
+                <li><strong>Logging:</strong> Αυτόματη καταγραφή (traceability) της λειτουργίας του μοντέλου.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Technical Documentation Framework — Philippos Zygouris</p>
+        <p style="margin-top: 0.5rem; opacity: 0.6;">Συμμόρφωση με MDR 2017/745 & AI Act (Annex IV)</p>
+    </footer>
+
+</body>
+</html>

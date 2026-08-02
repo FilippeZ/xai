@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Τεχνικός Φάκελος: XAI Governance Dashboard (SaMD) — Code-Level Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- MathJax for LaTeX formulas -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --border: rgba(99, 102, 241, 0.3);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.05);
+            --danger: #ef4444;
+            --code-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            padding: 6rem 0 4rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 5rem;
+        }
+
+        .header-badge {
+            display: inline-block;
+            padding: 0.6rem 1.25rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .doc-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 5rem;
+            position: sticky;
+            top: 2rem;
+            z-index: 100;
+        }
+
+        .nav-item {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Dossier Sections */
+        .section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .section-tag {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 2.5rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 2.5rem 0 1.25rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Technical Elements */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .param-box {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Consolas', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .param-box h4 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-snippet {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .code-val {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Math Formulas */
+        .formula-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid var(--secondary);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 2rem 0;
+            color: white;
+        }
+
+        /* Tables */
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .spec-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spec-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+
+        .spec-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Risk Alerts */
+        .risk-alert {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--danger);
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 1rem;
+        }
+
+        .risk-title {
+            color: var(--danger);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 6rem 0;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-badge">Code-Level Technical Analytical Dossier</div>
+            <h1>XAI Governance SaMD</h1>
+            <p class="subtitle">Αυστηρή τεχνική τεκμηρίωση με παραμέτρους από τον πηγαίο κώδικα (Source Code Analysis),
+                μετρικές V&V και συγκεκριμένες ρυθμίσεις αλγορίθμων.</p>
+        </header>
+
+        <nav class="doc-nav">
+            <a href="#id" class="nav-item">01 Identification</a>
+            <a href="#algos" class="nav-item">02 Algorithms</a>
+            <a href="#data" class="nav-item">03 Data Proxies</a>
+            <a href="#risk" class="nav-item">04 Risk Matrix</a>
+            <a href="#vv" class="nav-item">05 V&V Metrics</a>
+            <a href="#pms" class="nav-item">08 PMS Lifecycle</a>
+            <a href="#ai-act" class="nav-item">09 AI Act Annex IV</a>
+        </nav>
+
+        <!-- Section 1 -->
+        <section class="section" id="id">
+            <span class="section-tag">Section 01</span>
+            <h2>Identification & Classification</h2>
+            <div class="tech-grid">
+                <div>
+                    <h3 style="margin-top:0;">Device Identity</h3>
+                    <table class="spec-table">
+                        <tr>
+                            <td><strong>Name</strong></td>
+                            <td>XAI Governance Dashboard</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UDI-DI</strong></td>
+                            <td><code>73299249-XAI-GOV-001</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Version</strong></td>
+                            <td><code>v1.0.0</code> (SemVer)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Class</strong></td>
+                            <td><strong>Class IIb</strong> (MDR Rule 11)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <h3 style="margin-top:0;">IMDRF Categorization</h3>
+                    <div class="param-box">
+                        <span class="code-snippet">SIGNIFICANCE = <span class="code-val">"Inform Clinical
+                                Management"</span></span>
+                        <span class="code-snippet">STATE_HEALTH = <span class="code-val">"Critical"</span></span>
+                        <span class="code-comment"># Affects life-threatening situations (Cancer, etc.)</span>
+                        <br>
+                        <span class="code-snippet">DEPLOYMENT = <span class="code-val">"Hybrid-Cloud"</span></span>
+                        <span class="code-comment"># SaaS independent of medical hardware</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Algorithms (New) -->
+        <section class="section" id="algos">
+            <span class="section-tag">Section 02</span>
+            <h2>Algorithmic Specifications (Source Code)</h2>
+            <p>Ακριβείς παράμετροι των μεθόδων XAI όπως έχουν υλοποιηθεί στα modules <code>src.methods</code>.</p>
+
+            <div class="tech-grid">
+                <div class="param-box">
+                    <h4>LIME Configuration</h4>
+                    <span class="code-comment"># src/methods/model_agnostic.py</span><br>
+                    <span class="code-snippet">Explainer: <span class="code-val">LimeTabularExplainer</span></span>
+                    <span class="code-snippet">Mode: <span class="code-val">"classification"</span></span>
+                    <span class="code-snippet">Num Features: <span class="code-val">4</span> (Optimized for cognitive
+                        load)</span>
+                    <span class="code-snippet">Discretize: <span class="code-val">True</span> (Quartile / Decile)</span>
+                </div>
+
+                <div class="param-box">
+                    <h4>SHAP Configuration</h4>
+                    <span class="code-comment"># src/methods/model_agnostic.py</span><br>
+                    <span class="code-snippet">Primary: <span class="code-val">TreeExplainer</span>
+                        (RandomForest)</span>
+                    <span class="code-snippet">Fallback: <span class="code-val">KernelExplainer</span></span>
+                    <span class="code-snippet">Background Samples: <span class="code-val">N=50</span>
+                        (K-Means/Random)</span>
+                    <span class="code-snippet">Link: <span class="code-val">"identity"</span> (Probability space)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Data (New) -->
+        <section class="section" id="data">
+            <span class="section-tag">Section 03</span>
+            <h2>Validation Datasets (Clinical Proxies)</h2>
+            <p>Δεδομένα που χρησιμοποιούνται για την επαλήθευση της ορθότητας των αλγορίθμων (GSPR Requirement).</p>
+
+            <table class="spec-table">
+                <tr>
+                    <th>Dataset</th>
+                    <th>Type</th>
+                    <th>Specs (src/core/input_layer.py)</th>
+                    <th>Clinical Proxy For</th>
+                </tr>
+                <tr>
+                    <td><strong>Iris</strong></td>
+                    <td>Tabular</td>
+                    <td>150 samples, 4 features, Stratified Split (80/20)</td>
+                    <td>Electronic Health Records (EHR) / Labs</td>
+                </tr>
+                <tr>
+                    <td><strong>MNIST</strong></td>
+                    <td>Image</td>
+                    <td>2000 samples (Subsampled), 28x28 Grayscale, Norm [0,1]</td>
+                    <td>X-Rays / MRI / Histopathology</td>
+                </tr>
+                <tr>
+                    <td><strong>20-News</strong></td>
+                    <td>Text</td>
+                    <td>Categories: 'baseball' vs 'space'</td>
+                    <td>Clinical Notes / Radiology Reports</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="section" id="risk">
+            <span class="section-tag">Section 04</span>
+            <h2>Risk Management (ISO 14971)</h2>
+            <div class="tech-grid">
+                <div class="risk-alert">
+                    <span class="risk-title">HAZARD: Automation Bias</span>
+                    <p>Ο ιατρός αποδέχεται την πρόταση της AI χωρίς κριτική σκέψη.</p>
+                    <p><strong>Mitigation:</strong> Simulatability Training (<code>experiments/simulations.py</code>).
+                    </p>
+                </div>
+                <div class="risk-alert">
+                    <span class="risk-title">HAZARD: Illusion of Understanding</span>
+                    <p>Η εξήγηση φαίνεται λογική αλλά είναι λάθος (High Faithfulness / Low Fidelity).</p>
+                    <p><strong>Mitigation:</strong> Fidelity Check (Rejected if R² < 0.90).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section class="section" id="vv">
+            <span class="section-tag">Section 05</span>
+            <h2>V&V Metrics (Analytical Performance)</h2>
+            <p>Μαθηματικοί τύπο που χρησιμοποιούνται στο module <code>src.experiments.evaluation</code>.</p>
+
+            <div class="tech-grid">
+                <div>
+                    <h3>1. Simulatability Score</h3>
+                    <div class="formula-box">
+                        $$ Score = Acc_{post} - Acc_{pre} $$
+                    </div>
+                    <p>Μετρά την πραγματική βελτίωση στην ανθρώπινη πρόβλεψη μετά την παροχή εξήγησης.</p>
+                </div>
+                <div>
+                    <h3>2. Counterfactual Sparsity (L0)</h3>
+                    <div class="formula-box">
+                        $$ L_0 = \sum_{j=1}^{d} \mathbb{I}(x'_j \neq x_j) $$
+                    </div>
+                    <p>Αριθμός χαρακτηριστικών που πρέπει να αλλάξουν (στόχος: ελαχιστοποίηση για κλινική εφικτότητα).
+                    </p>
+                </div>
+                <div>
+                    <h3>3. Explanation Fidelity</h3>
+                    <div class="formula-box">
+                        $$ Fid = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}(f_{surrogate}(x_i) = f_{blackbox}(x_i)) $$
+                    </div>
+                    <p>Ποσοστό συμφωνίας μεταξύ τοπικού μοντέλου (LIME) και πραγματικού μοντέλου.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9 -->
+        <section class="section" id="ai-act"
+            style="border-color: var(--secondary); background: linear-gradient(135deg, var(--card-bg), rgba(16, 185, 129, 0.05));">
+            <span class="section-tag" style="color: var(--secondary);">Section 09</span>
+            <h2 style="border-color: var(--secondary);">EU AI Act Annex IV Compliance</h2>
+
+            <div class="tech-grid">
+                <div class="param-box" style="border-color: var(--secondary);">
+                    <h4>Logging System (Traceability)</h4>
+                    <span class="code-comment"># src/governance/audit_trail.py</span><br>
+                    <span class="code-snippet">Format: <span class="code-val">JSON Structure</span></span>
+                    <span class="code-snippet">Fields: <span class="code-val">timestamp, model_ver, input_hash,
+                            prediction, explanation_id, reviewer_id</span></span>
+                    <span class="code-snippet">Storage: <span class="code-val">Immutable Append-Only Log</span></span>
+                </div>
+
+                <div class="param-box" style="border-color: var(--secondary);">
+                    <h4>Human Oversight Interface</h4>
+                    <span class="code-comment"># app.py (Streamlit)</span><br>
+                    <span class="code-snippet">Override Mechanism: <span class="code-val">Checkbox("Reject AI
+                            Decision")</span></span>
+                    <span class="code-snippet">Comment Field: <span class="code-val">Mandatory if rejected</span></span>
+                    <span class="code-snippet">Review Protocol: <span class="code-val">"4-Eye Principle"</span></span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Analytical Technical Dossier | XAI Governance Dashboard</p>
+            <p style="margin-top: 1rem;">Generated from Source Code Analysis (commit: <code>HEAD</code>) & Regulatory
+                Standards (MDR/AI Act).</p>
+        </footer>
+    </div>
+
+</body>
+
+</html>

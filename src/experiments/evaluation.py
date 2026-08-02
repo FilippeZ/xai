@@ -10,7 +10,7 @@ from typing import Dict
 
 def simulatability_score(accuracy_pre: float, accuracy_post: float) -> float:
     """
-    Effectiveness of an explanation.
+    Effectiveness of an explanation (Level 3 Simulatability Engine).
 
     Score = Accuracy_post − Accuracy_pre
 
@@ -18,6 +18,15 @@ def simulatability_score(accuracy_pre: float, accuracy_post: float) -> float:
     predict the model's behaviour more accurately.
     """
     return accuracy_post - accuracy_pre
+
+
+def detect_illusion_of_understanding(simulatability: float) -> bool:
+    """
+    Detect 'Illusion of Understanding'.
+    If Simulatability <= 0, the explanation failed to convey genuine causal understanding.
+    """
+    return simulatability <= 0.0
+
 
 
 def counterfactual_quality(original: np.ndarray, counterfactual: np.ndarray) -> Dict[str, float]:

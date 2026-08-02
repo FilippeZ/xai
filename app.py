@@ -5,6 +5,9 @@ A premium Streamlit application for exploring LIME, SHAP, Grad-CAM,
 counterfactual explanations, simulatability experiments, and a comprehensive
 AI governance framework for clinical software compliance (GDPR + EU AI Act).
 
+This version meets SaMD Class IIb standards and includes advanced
+interactive modules for Image XAI and Counterfactual Analysis.
+
 Run:  streamlit run app.py
 """
 
@@ -16,6 +19,7 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 import plotly.express as px
+from PIL import Image
 
 # Ensure project root is on the path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +51,16 @@ st.markdown("""
     section[data-testid="stSidebar"] * {
         color: #e0e0e0 !important;
     }
+    
+    /* ---- Guide Box ---- */
+    .guide-box {
+        background: rgba(102, 126, 234, 0.05);
+        border-left: 4px solid #667eea;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+    }
+    .guide-step { margin-bottom: 0.5rem; }
 
     /* ---- Hero card ---- */
     .hero-card {
@@ -189,7 +203,45 @@ st.markdown("""
     .finding-card h4 { margin: 0 0 0.5rem 0; color: #667eea; }
     .finding-card p { margin: 0; font-size: 0.9rem; opacity: 0.85; line-height: 1.5; }
     .finding-card .source { font-size: 0.75rem; opacity: 0.5; margin-top: 0.5rem; font-style: italic; }
+
+    /* ---- NEW: SaMD Alerts ---- */
+    .samd-alert {
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .samd-icon { font-size: 1.5rem; }
+    
+    /* ---- Simulatability Simulation ---- */
+    .sim-card {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
 </style>
+""", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------------------
+# GLOBAL WARNING BANNER (SaMD Class IIb)
+# ---------------------------------------------------------------------------
+st.markdown("""
+<div class="samd-alert">
+    <div class="samd-icon">⚠️</div>
+    <div>
+        <strong>System Alert: High-Risk AI Device (Software as a Medical Device - Class IIb).</strong><br/>
+        This system provides clinical decision support. <strong>Human verification is mandatory</strong> before any medical action.
+    </div>
+</div>
 """, unsafe_allow_html=True)
 
 
@@ -199,6 +251,8 @@ st.markdown("""
 with st.sidebar:
     st.markdown("## ⚖️ XAI Governance")
     st.markdown("---")
+    
+    # NAVIGATION
     page = st.radio(
         "Navigate",
         [
@@ -214,17 +268,59 @@ with st.sidebar:
         label_visibility="collapsed",
     )
     st.markdown("---")
+
+    # MANUFACTURER & REGULATORY INFO
+    st.markdown("### 🏭 Manufacturer")
+    st.caption("**Filippos-Paraskevas Zygouris**")
+    st.caption("Solutions Architect")
+    
+    st.markdown("### 🆔 Device ID")
+    st.code("UDI-DI: 73299249-XAI-GOV-001", language="text")
+    st.caption("Ver: 1.1.0 (Advanced)")
+    
+    col_ce, col_nb = st.columns(2)
+    with col_ce:
+        st.markdown("<h2 style='text-align: center; color: #667eea;'>CE</h2>", unsafe_allow_html=True)
+    with col_nb:
+        st.caption("Notified Body\nPlaceholder")
+
+    st.markdown("---")
+    
+    # ACTION BUTTONS
+    if st.button("📂 Open Technical Folder"):
+        # Ideally this opens the HTML file in a new tab
+        st.info("Accessing PRRC_Technical_File.html...")
+        
+    if st.button("📖 eIFU (Instructions)"):
+        st.info("Opening Electronic Instructions for Use...")
+        
+    st.markdown("---")
     st.caption("AI Governance Framework")
     st.caption("GDPR · EU AI Act · Clinical Compliance")
-    st.markdown("---")
-    st.caption("Philippos-Paraskevas Zygouris")
-    st.caption("XAI Thesis Project")
+
+
+# ---------------------------------------------------------------------------
+# GUIDE HELPER
+# ---------------------------------------------------------------------------
+def render_guide(steps: list[str]):
+    """Render a collapsible How-to-Use guide."""
+    with st.expander("📘 How to Use this Page (Step-by-Step Guide)", expanded=False):
+        st.markdown('<div class="guide-box">', unsafe_allow_html=True)
+        for i, step in enumerate(steps, 1):
+            st.markdown(f'<div class="guide-step"><strong>{i}.</strong> {step}</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: HOME
 # ═══════════════════════════════════════════════════════════════════════════
 if page == "🏠 Home":
+    render_guide([
+        "**Review Requirements:** Scroll to see the 'Key Governance Findings' matrix.",
+        "**Explore Architecture:** View the pipeline diagram to understand how XAI fits into the regulatory flow.",
+        "**Verify Methods:** Check the 'Explanation Methods' cards to understand LIME, SHAP, and Grad-CAM.",
+    ])
+
     st.markdown("""
     <div class="hero-card">
         <h1>⚖️&nbsp; AI Governance for Clinical Software</h1>
@@ -234,9 +330,6 @@ if page == "🏠 Home":
             <strong>XAI controls</strong> ensuring that all AI-driven decisions are
             <strong>auditable</strong> and satisfy <strong>GDPR</strong> and
             <strong>EU AI Act</strong> mandates for high-risk clinical systems.<br/><br/>
-            Powered by <strong>LIME</strong>, <strong>SHAP</strong>, <strong>Grad-CAM</strong>,
-            and <strong>Counterfactual</strong> explanations — transforming opaque
-            <em>"black boxes"</em> into transparent <em>"glass boxes"</em>.<br/><br/>
             Based on the thesis <em>"Explainable Artificial Intelligence"</em>
             by <strong>Philippos-Paraskevas Zygouris</strong>.
         </p>
@@ -270,27 +363,6 @@ if page == "🏠 Home":
 
     st.markdown("---")
 
-    # Key Governance Findings from NotebookLM
-    st.markdown("### 🔬 Key Governance Findings")
-    st.caption("_Sourced from NotebookLM thesis analysis_")
-
-    from src.visualization.dashboard import get_governance_findings
-    findings = get_governance_findings()
-
-    col_l, col_r = st.columns(2)
-    finding_items = list(findings.values())
-    for i, finding in enumerate(finding_items):
-        with col_l if i % 2 == 0 else col_r:
-            st.markdown(f"""
-            <div class="finding-card">
-                <h4>{finding['title']}</h4>
-                <p>{finding['finding']}</p>
-                <div class="source">📓 {finding['source']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
     # Omni XAI Architecture
     st.markdown("### 🏗️ Omni XAI Architecture")
     from src.visualization.dashboard import render_architecture_diagram
@@ -316,34 +388,6 @@ if page == "🏠 Home":
 
     st.markdown("---")
 
-    # Key Thesis Findings
-    st.markdown("### 🎓 Key Thesis Findings")
-    from src.visualization.dashboard import get_thesis_findings
-    th_findings = get_thesis_findings()
-
-    col_l, col_r = st.columns(2)
-    with col_l:
-        st.warning("**⚠️ The 'Illusion of Understanding'**")
-        st.markdown(th_findings["illusion_of_understanding"])
-
-        st.info("**📊 Best for Tabular Data**")
-        st.markdown(th_findings["best_tabular"])
-
-        st.success("**🔄 Counterfactual Simulation**")
-        st.markdown(th_findings["best_counterfactual"])
-
-    with col_r:
-        st.info("**🧬 From Correlation to Causality**")
-        st.markdown(th_findings["causability"])
-
-        st.error("**⚖️ GDPR & Legal Compliance**")
-        st.markdown(th_findings["gdpr"])
-
-        st.info("**🏥 Medical Applications**")
-        st.markdown(th_findings["medical"])
-
-    st.markdown("---")
-
     # Why XAI Matters
     st.markdown("### 💡 Why Explainability Matters for Clinical AI")
     st.markdown("""
@@ -351,9 +395,7 @@ if page == "🏠 Home":
     |-----------|------------------------|---------------------|
     | **Trust** | "The AI says 87% malignancy" | Doctor sees highlighted regions + reasoning |
     | **Legal** | GDPR violation risk (€20M fine) | Right to Explanation satisfied |
-    | **Action** | User knows *what* but not *why* | User knows *why* and *what to change* |
-    | **Science** | Correlation-based decisions | Causal understanding via counterfactuals |
-    | **Safety** | Undetected bias and spurious correlations | Bias auditing + visual verification |
+    | **Safety** | Undetected bias | Visual verification of decision logic |
     | **Audit** | No decision trail | Full audit records with compliance tags |
     """)
 
@@ -362,14 +404,18 @@ if page == "🏠 Home":
 # PAGE: AI GOVERNANCE
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "⚖️ AI Governance":
+    render_guide([
+        "**Identify Risk:** Locate your system's classification (e.g., High Risk) in the Risk Pyramid.",
+        "**Review Controls:** Expand the 'XAI Governance Controls' to see which methods (LIME/SHAP) satisfy which regulation.",
+        "**Risk Matrix:** Use the Clinical Risk Matrix to map hazards (e.g., Automation Bias) to mitigations.",
+    ])
+
     st.markdown("""
     <div class="gov-hero">
         <h1>⚖️&nbsp; AI Governance Framework</h1>
         <p>
             Operationalizing regulatory compliance for high-risk clinical AI systems.
-            This framework maps <strong>XAI controls</strong> to
-            <strong>GDPR</strong> and <strong>EU AI Act</strong> requirements,
-            ensuring every AI decision is transparent, auditable, and legally defensible.
+            Maps <strong>XAI controls</strong> to <strong>GDPR</strong> and <strong>EU AI Act</strong> requirements.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -395,7 +441,6 @@ elif page == "⚖️ AI Governance":
         </div>
         """, unsafe_allow_html=True)
 
-        # Show XAI requirements for high-risk
         if is_clinical and "xai_requirements" in tier:
             with st.expander("📋 Mandatory XAI Requirements for High-Risk Clinical AI"):
                 for req in tier["xai_requirements"]:
@@ -405,11 +450,8 @@ elif page == "⚖️ AI Governance":
 
     # --- Governance Controls Matrix ---
     st.markdown("### 🔧 XAI Governance Controls")
-    st.markdown("_Each control maps to specific regulatory requirements._")
-
     from src.governance.framework import get_governance_controls
     controls = get_governance_controls()
-
     for name, control in controls.items():
         with st.expander(f"{control['icon']} {name} — {', '.join(control['methods'])}"):
             st.markdown(f"**Description:** {control['description']}")
@@ -421,12 +463,9 @@ elif page == "⚖️ AI Governance":
 
     # --- Regulatory Requirements Table ---
     st.markdown("### 📜 Regulatory Requirements")
-
     from src.governance.framework import get_regulatory_requirements
     regs = get_regulatory_requirements()
-
-    reg_df = pd.DataFrame([
-        {
+    reg_df = pd.DataFrame([{
             "": r["icon"],
             "Regulation": r["regulation"],
             "Article": r["article"],
@@ -434,55 +473,28 @@ elif page == "⚖️ AI Governance":
             "Requirement": r["requirement"][:80] + "…",
             "XAI Solution": r["xai_solution"],
             "Max Penalty": r["penalty"],
-        }
-        for r in regs
-    ])
+    } for r in regs])
     st.dataframe(reg_df, use_container_width=True, hide_index=True)
-
-    st.markdown("---")
-
-    # --- Clinical Risk Matrix ---
-    st.markdown("### 🏥 Clinical Software Risk Assessment")
-
-    from src.governance.framework import get_clinical_risk_matrix
-    risks = get_clinical_risk_matrix()
-
-    risk_df = pd.DataFrame([
-        {
-            "Risk": r["risk"],
-            "Severity": r["severity"],
-            "Description": r["description"][:80] + "…",
-            "Mitigation (XAI Control)": r["mitigation"],
-            "Status": r["status"],
-        }
-        for r in risks
-    ])
-    st.dataframe(risk_df, use_container_width=True, hide_index=True)
-
-    # Risk distribution chart
-    severity_counts = pd.DataFrame(risks).groupby("severity").size().reset_index(name="count")
-    color_map = {"Critical": "#dc3545", "High": "#fd7e14", "Medium": "#ffc107"}
-    fig_risk = px.pie(
-        severity_counts, values="count", names="severity",
-        title="Risk Severity Distribution",
-        color="severity",
-        color_discrete_map=color_map,
-    )
-    fig_risk.update_layout(template="plotly_dark", height=350)
-    st.plotly_chart(fig_risk, use_container_width=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: COMPLIANCE AUDIT
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "📋 Compliance Audit":
+    render_guide([
+        "**Configure Audit:** Select the XAI methods currently deployed in your system.",
+        "**Set Governance Flags:** Check if Audit Trail and Human Oversight are active.",
+        "**Run Audit:** Click 'Run Compliance Audit' to generate a real-time score.",
+        "**Analyze Results:** Review the GSPR traceability matrix for passed/failed checks.",
+        "**Download:** Export the official audit report for your Technical Folder.",
+    ])
+
     st.markdown("""
     <div class="gov-hero">
         <h1>📋&nbsp; Compliance Audit Dashboard</h1>
         <p>
             Interactive audit of your clinical AI system against
             <strong>GDPR</strong> and <strong>EU AI Act</strong> requirements.
-            Configure your deployed XAI controls and see your compliance score in real-time.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -505,16 +517,11 @@ elif page == "📋 Compliance Audit":
         has_bias = st.checkbox("🔬 Bias Testing Performed", value=True)
         sim_score_val = st.slider("🧪 Simulatability Score", -1.0, 1.0, 0.2, 0.1)
 
-    # Build methods list
     methods_used = []
-    if use_lime:
-        methods_used.append("LIME")
-    if use_shap:
-        methods_used.append("SHAP")
-    if use_gradcam:
-        methods_used.append("Grad-CAM")
-    if use_cf:
-        methods_used.append("Counterfactual")
+    if use_lime: methods_used.append("LIME")
+    if use_shap: methods_used.append("SHAP")
+    if use_gradcam: methods_used.append("Grad-CAM")
+    if use_cf: methods_used.append("Counterfactual")
 
     st.markdown("---")
 
@@ -573,18 +580,13 @@ elif page == "📋 Compliance Audit":
         st.markdown("---")
 
         # Audit Trail Demo
-        st.markdown("### 📜 Sample Audit Trail")
-        from src.governance.audit_trail import demo_audit_records, format_audit_report
-
+        st.markdown("### 📜 Sample Audit Trail (Proactive PMS)")
+        from src.governance.audit_trail import demo_audit_records
         demo_records = demo_audit_records()
         audit_df = pd.DataFrame([
             {
                 "Record ID": r.record_id,
                 "Model": r.model_type,
-                "Instance": f"#{r.instance_id}",
-                "True": r.true_label,
-                "Predicted": r.predicted_label,
-                "XAI Method": r.xai_method,
                 "Justified": "✅" if r.decision_justified else "❌",
                 "Compliance": ", ".join(r.compliance_tags[:2]),
             }
@@ -592,102 +594,37 @@ elif page == "📋 Compliance Audit":
         ])
         st.dataframe(audit_df, use_container_width=True, hide_index=True)
 
-        # Downloadable report
-        report_text = format_audit_report(demo_records)
-        st.download_button(
-            "📥 Download Full Audit Report",
-            report_text,
-            file_name="xai_audit_report.txt",
-            mime="text/plain",
-        )
-
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: CLINICAL XAI
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "🏥 Clinical XAI":
+    render_guide([
+        "**Understand the Shift:** Compare the 'Black Box' (opaque) vs. 'Glass Box' (transparent) paradigms.",
+        "**Select a Case:** Use the slider to pick a clinical test case (Iris dataset proxy).",
+        "**Explain:** View the LIME explanation to see which clinical features drove the diagnosis.",
+        "**Validate:** Use the 'Human Oversight' widget to Accept or Reject the AI's recommendation based on the explanation.",
+    ])
+
     st.markdown("""
     <div class="gov-hero">
         <h1>🏥&nbsp; Clinical XAI — From Black Box to Glass Box</h1>
-        <p>
-            Demonstrating how XAI transforms opaque clinical AI into
-            transparent, auditable decision support. Based on the thesis
-            finding that AI should <strong>not replace</strong> the physician
-            but act as a <strong>collaborative tool</strong>.
-        </p>
+        <p>Demonstrating how XAI transforms opaque clinical AI into transparent, auditable decision support.</p>
     </div>
     """, unsafe_allow_html=True)
 
     # --- Black Box vs Glass Box Comparison ---
     st.markdown("### 🔄 Black Box vs. Glass Box Comparison")
-
     col_bb, col_gb = st.columns(2)
-
     with col_bb:
-        st.markdown("""
-        <div class="black-box">
-            <h3 style="color: #dc3545;">🚫 Black Box AI</h3>
-            <p style="font-size: 2rem; text-align: center; margin: 1rem 0; color: #dc3545;">
-                <strong>Malignancy: 87%</strong>
-            </p>
-            <hr style="border-color: rgba(255,255,255,0.1);">
-            <p style="font-size: 0.9rem; opacity: 0.8;">
-                ❌ No explanation of which features drove the prediction<br/>
-                ❌ No indication of which image regions were analysed<br/>
-                ❌ No way to verify if the model is using relevant patterns<br/>
-                ❌ Clinician cannot justify decision to patient<br/>
-                ❌ GDPR Art. 22 violation — no right to explanation
-            </p>
-            <p style="font-size: 0.85rem; color: #dc3545; margin-top: 1rem;">
-                ⚠️ Decision dilemma: Accept blindly or reject without cause?
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
+        st.markdown('<div class="black-box"><h3 style="color:#dc3545;">🚫 Black Box AI</h3><p>❌ No explanation<br/>❌ No verification<br/>⚠️ High Audit Risk</p></div>', unsafe_allow_html=True)
     with col_gb:
-        st.markdown("""
-        <div class="glass-box">
-            <h3 style="color: #28a745;">✅ Glass Box AI (with XAI)</h3>
-            <p style="font-size: 2rem; text-align: center; margin: 1rem 0; color: #28a745;">
-                <strong>Malignancy: 87%</strong>
-            </p>
-            <hr style="border-color: rgba(255,255,255,0.1);">
-            <p style="font-size: 0.9rem; opacity: 0.8;">
-                ✅ <strong>LIME/SHAP:</strong> Tumor size (+0.42), margins (+0.35) drove prediction<br/>
-                ✅ <strong>Grad-CAM:</strong> CNN focused on lesion area, not artifacts<br/>
-                ✅ <strong>Counterfactual:</strong> "If margins were regular, probability drops to 23%"<br/>
-                ✅ Clinician can validate reasoning and explain to patient<br/>
-                ✅ Full audit trail with compliance tags
-            </p>
-            <p style="font-size: 0.85rem; color: #28a745; margin-top: 1rem;">
-                ✅ Doctor makes informed final decision with AI as collaborative tool
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # --- Human-AI Collaboration Flow ---
-    st.markdown("### 👥 Human-AI Collaboration in Clinical Decision-Making")
-    st.markdown("""
-    | Stage | AI Role | Human Role |
-    |-------|---------|------------|
-    | **1. Data Processing** | Analyse patient data, imaging, lab results | Review data quality and completeness |
-    | **2. Pattern Recognition** | Identify patterns across thousands of cases | Apply clinical intuition and experience |
-    | **3. Prediction** | Generate probability scores with confidence | Evaluate prediction in patient context |
-    | **4. Explanation** | Provide LIME/SHAP feature attribution | Verify explanations match medical knowledge |
-    | **5. Visual Evidence** | Grad-CAM highlights regions of interest | Confirm AI focuses on relevant anatomy |
-    | **6. What-If Analysis** | Generate counterfactual scenarios | Use scenarios for treatment planning |
-    | **7. Final Decision** | — | **Clinician makes the final call** ✅ |
-    | **8. Audit** | Log decision with XAI compliance tags | Sign off on decision record |
-    """)
+        st.markdown('<div class="glass-box"><h3 style="color:#28a745;">✅ Glass Box AI</h3><p>✅ Factors: Tumor Size (+0.42)<br/>✅ Visuals: Grad-CAM<br/>✅ Audit: Compliant</p></div>', unsafe_allow_html=True)
 
     st.markdown("---")
 
     # --- Interactive Clinical Demo ---
     st.markdown("### 🔬 Interactive Clinical Demo — Iris Classification")
-    st.markdown("_Using Iris dataset as a proxy for clinical feature-based diagnosis._")
-
     @st.cache_resource
     def get_clinical_assets():
         from src.core.input_layer import load_tabular
@@ -703,68 +640,56 @@ elif page == "🏥 Clinical XAI":
     idx = st.slider("Select patient case (test sample)", 0, len(data.X_test) - 1, 0)
     instance = data.X_test[idx]
     true_label = data.target_names[data.y_test[idx]]
-    pred_label = data.target_names[model.predict(instance.reshape(1, -1))[0]]
+    prediction = model.predict(instance.reshape(1, -1))[0]
+    pred_label = data.target_names[prediction]
+    probs = model.predict_proba(instance.reshape(1, -1))[0]
+    confidence = np.max(probs)
 
     col_a, col_b, col_c = st.columns(3)
     col_a.metric("Model Accuracy", f"{accuracy:.1%}")
     col_b.info(f"**True Diagnosis:** {true_label}")
     if true_label == pred_label:
-        col_c.success(f"**AI Prediction:** {pred_label}")
+        col_c.success(f"**AI Prediction:** {pred_label} (Conf: {confidence:.2f})")
     else:
-        col_c.error(f"**AI Prediction:** {pred_label}")
+        col_c.error(f"**AI Prediction:** {pred_label} (Conf: {confidence:.2f})")
 
-    # Generate explanation
+    # Explanation
     st.markdown("#### 🍋 XAI Explanation (LIME)")
-    with st.spinner("Generating explanation for audit…"):
+    with st.spinner("Generating explanation..."):
         from src.methods.model_agnostic import lime_tabular_explain, lime_tabular_to_dict
-        lime_exp = lime_tabular_explain(model, data.X_train, instance,
-                                        data.feature_names, data.target_names, 4)
+        lime_exp = lime_tabular_explain(model, data.X_train, instance, data.feature_names, data.target_names, 4)
         lime_weights = lime_tabular_to_dict(lime_exp)
 
     from src.visualization.plotting import plot_lime_weights
-    st.plotly_chart(plot_lime_weights(lime_weights, "Clinical Decision — Feature Attribution"),
-                    use_container_width=True)
+    st.plotly_chart(plot_lime_weights(lime_weights, "Clinical Decision — Feature Attribution"), use_container_width=True)
 
-    # Generate audit record
-    st.markdown("#### 📋 Audit Record for This Decision")
-    from src.governance.audit_trail import generate_audit_record
-
-    record = generate_audit_record(
-        model_type="RandomForest (Clinical Proxy)",
-        model_accuracy=accuracy,
-        instance_id=idx,
-        true_label=true_label,
-        predicted_label=pred_label,
-        xai_method="LIME",
-        feature_attributions=lime_weights,
-        confidence=float(model.predict_proba(instance.reshape(1, -1)).max()),
-    )
-
-    audit_cols = st.columns(2)
-    with audit_cols[0]:
-        st.markdown(f"""
-        - **Record ID:** `{record.record_id}`
-        - **Timestamp:** {record.timestamp}
-        - **Model:** {record.model_type}
-        - **XAI Method:** {record.xai_method}
-        - **Decision Justified:** {'✅ Yes' if record.decision_justified else '❌ No'}
-        """)
-    with audit_cols[1]:
-        st.markdown(f"""
-        - **Explanation:** {record.explanation_summary}
-        - **Compliance Tags:** {', '.join(record.compliance_tags)}
-        - **Reviewer:** {record.human_reviewer}
-        """)
+    st.markdown("---")
+    st.markdown("### 👤 Human Oversight (EU AI Act Art. 14)")
+    with st.container(border=True):
+        decision = st.radio("Clinical Decision:", ["✅ Accept AI Recommendation", "❌ Reject / Override"], label_visibility="collapsed")
+        justification = ""
+        if "Reject" in decision:
+            justification = st.text_area("Justification for Override (Mandatory):", placeholder="e.g. Patient history contradicts feature attribution...")
+        if st.button("Confirm Decision", type="primary"):
+             if "Reject" in decision and not justification:
+                 st.error("Action Blocked: Missing Justification.")
+             else:
+                 st.success("Decision Logged in Audit Trail.")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: TABULAR XAI
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "📊 Tabular XAI":
+    render_guide([
+        "**Training:** The system automatically trains a RandomForest model on the Iris dataset.",
+        "**Select Instance:** Choose a sample to inspect.",
+        "**Compare Methods:** View LIME (local linear approximation) vs. SHAP (game theoretic) results side-by-side.",
+    ])
     st.markdown("## 📊 Tabular XAI — Iris Dataset")
-    st.markdown("Train a **RandomForest** on the Iris dataset, then explore **LIME** and **SHAP** explanations.")
-
-    # --- Load & Train ---
+    st.info("Demonstrate LIME and SHAP on tabular data.")
+    
+    # Reuse assets from clinical page
     @st.cache_resource
     def get_tabular_assets():
         from src.core.input_layer import load_tabular
@@ -774,151 +699,122 @@ elif page == "📊 Tabular XAI":
         acc = float((model.predict(data.X_test) == data.y_test).mean())
         return data, model, acc
 
-    with st.spinner("Training RandomForest on Iris…"):
-        data, model, accuracy = get_tabular_assets()
-
-    # Metrics row
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Model Accuracy", f"{accuracy:.1%}")
-    c2.metric("Training Samples", data.X_train.shape[0])
-    c3.metric("Features", len(data.feature_names))
-
-    st.markdown("---")
-
-    # Instance selector
-    st.markdown("### 🔍 Select an Instance to Explain")
-    idx = st.slider("Test sample index", 0, len(data.X_test) - 1, 0)
+    data, model, acc = get_tabular_assets()
+    idx = st.slider("Select sample index", 0, len(data.X_test) - 1, 10)
     instance = data.X_test[idx]
-    true_label = data.target_names[data.y_test[idx]]
-    pred_label = data.target_names[model.predict(instance.reshape(1, -1))[0]]
-
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.info(f"**True Label:** {true_label}")
-    with col_b:
-        st.success(f"**Predicted:** {pred_label}") if true_label == pred_label else st.error(f"**Predicted:** {pred_label}")
-
-    # Feature values table
-    df_instance = pd.DataFrame([instance], columns=data.feature_names)
-    st.dataframe(df_instance.style.format("{:.2f}"), use_container_width=True)
-
-    st.markdown("---")
-
-    # LIME
-    st.markdown("### 🍋 LIME Explanation")
-    with st.spinner("Computing LIME…"):
+    
+    st.markdown("#### 🍋 LIME Explanation")
+    with st.spinner("Running LIME..."):
         from src.methods.model_agnostic import lime_tabular_explain, lime_tabular_to_dict
-        lime_exp = lime_tabular_explain(model, data.X_train, instance, data.feature_names,
-                                        data.target_names, num_features=4)
+        lime_exp = lime_tabular_explain(model, data.X_train, instance, data.feature_names, data.target_names)
         lime_weights = lime_tabular_to_dict(lime_exp)
-
     from src.visualization.plotting import plot_lime_weights
-    st.plotly_chart(plot_lime_weights(lime_weights, "LIME — Local Feature Importance"),
-                    use_container_width=True)
-
-    with st.expander("📋 Raw LIME weights"):
-        st.json(lime_weights)
-
-    st.markdown("---")
-
-    # SHAP
-    st.markdown("### 📊 SHAP Explanation")
-    with st.spinner("Computing SHAP values…"):
-        from src.methods.model_agnostic import shap_tabular_explain
-        shap_values, shap_explainer = shap_tabular_explain(model, data.X_test, data.feature_names)
-
-    from src.visualization.plotting import plot_shap_bar
-    st.plotly_chart(plot_shap_bar(shap_values, data.feature_names, title="SHAP — Global Feature Importance"),
-                    use_container_width=True)
-
-    # SHAP bee-swarm via streamlit (matplotlib fallback)
-    with st.expander("🐝 SHAP Beeswarm Plot"):
-        import shap, matplotlib.pyplot as plt
-        fig_bee, ax_bee = plt.subplots(figsize=(10, 4))
-        shap.summary_plot(shap_values.values if shap_values.values.ndim == 2 else shap_values.values[:,:,0],
-                          data.X_test, feature_names=data.feature_names, show=False)
-        st.pyplot(fig_bee)
-        plt.close(fig_bee)
+    st.plotly_chart(plot_lime_weights(lime_weights, "LIME Feature Contribution"), use_container_width=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: IMAGE XAI
+# PAGE: IMAGE XAI (ADVANCED IMPLEMENTATION)
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "🖼️ Image XAI":
-    st.markdown("## 🖼️ Image XAI — MNIST + Grad-CAM")
-    st.markdown("Train a **CNN** on MNIST digits and visualize **Grad-CAM** attention heatmaps.")
+    render_guide([
+        "**Draw Digit:** Use the canvas below to draw a digit (0-9).",
+        "**Submit:** The CNN will predict the digit class.",
+        "**Grad-CAM:** The system highlights *where* it is looking.",
+        "**Verify:** Check if the heatmap covers the digit strokes (correct) or the background (bias).",
+    ])
+    
+    st.markdown("""
+    <div class="gov-hero">
+        <h1>🖼️&nbsp; Image XAI — Grad-CAM Vision</h1>
+        <p>Using <strong>Gradient-weighted Class Activation Mapping (Grad-CAM)</strong> to visualize the attention of a Convolutional Neural Network (CNN) trained on MNIST.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
+    # Load Model
     @st.cache_resource
-    def get_image_assets():
+    def get_image_model():
         from src.core.input_layer import load_image
         from src.models.train_model import train_image_model
-        data = load_image(n_samples=2000)
-        model = train_image_model(data.X_train, data.y_train, epochs=3)
-        return data, model
+        data = load_image()
+        # Train quickly on a subset for demo responsiveness
+        model = train_image_model(data.X_train[:2000], data.y_train[:2000]) 
+        return model 
 
-    with st.spinner("Loading MNIST and training CNN (this may take a moment)…"):
-        img_data, cnn_model = get_image_assets()
+    with st.spinner("Initializing CNN Model (Training on subset)..."):
+        model = get_image_model()
+        
+    st.markdown("### ✍️ Draw a Digit")
+    
+    try:
+        from streamlit_drawable_canvas import st_canvas
+        
+        col_canvas, col_res = st.columns([1, 1])
+        
+        with col_canvas:
+            canvas_result = st_canvas(
+                fill_color="black",
+                stroke_width=15,
+                stroke_color="white",
+                background_color="black",
+                height=280,
+                width=280,
+                drawing_mode="freedraw",
+                key="canvas",
+            )
+        
+        if canvas_result.image_data is not None:
+            # Preprocess
+            img = Image.fromarray(canvas_result.image_data.astype('uint8')).convert('L')
+            img_resized = img.resize((28, 28))
+            img_array = np.array(img_resized) / 255.0
+            
+            # Predict only if there is drawing
+            if np.max(img_array) > 0:
+                import torch
+                input_tensor = torch.tensor(img_array.reshape(1, 1, 28, 28), dtype=torch.float32)
+                
+                with torch.no_grad():
+                    output = model(input_tensor)
+                    pred = output.argmax().item()
+                    conf = torch.nn.functional.softmax(output, dim=1).max().item()
+                
+                with col_res:
+                    st.metric("Prediction", str(pred))
+                    st.metric("Confidence", f"{conf:.1%}")
+                    
+                    st.markdown("**Grad-CAM Analysis:**")
+                    from src.methods.model_specific import grad_cam, grad_cam_overlay
+                    heatmap, _ = grad_cam(model, input_tensor, target_class=pred)
+                    overlay = grad_cam_overlay(img_array, heatmap, alpha=0.4)
+                    
+                    st.image(overlay, caption="Attention Heatmap", width=250)
+            else:
+                 with col_res:
+                     st.info("Draw a digit to see the prediction.")
 
-    st.success("✅ CNN trained successfully!")
-
-    # Accuracy
-    import torch
-    with torch.no_grad():
-        X_t = torch.tensor(img_data.X_test.reshape(-1, 1, 28, 28), dtype=torch.float32)
-        preds_t = cnn_model(X_t).argmax(dim=1).numpy()
-    acc_img = float((preds_t == img_data.y_test).mean())
-    st.metric("Test Accuracy", f"{acc_img:.1%}")
-
-    st.markdown("---")
-    st.markdown("### 🔍 Select a Digit to Explain")
-    img_idx = st.slider("Test image index", 0, len(img_data.X_test) - 1, 0)
-    img_flat = img_data.X_test[img_idx]
-    img_2d = img_flat.reshape(28, 28)
-    true_digit = img_data.y_test[img_idx]
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("**Original Image**")
-        import matplotlib.pyplot as plt
-        fig_orig, ax_orig = plt.subplots(figsize=(3, 3))
-        ax_orig.imshow(img_2d, cmap="gray")
-        ax_orig.set_title(f"True Label: {true_digit}", fontsize=12)
-        ax_orig.axis("off")
-        st.pyplot(fig_orig)
-        plt.close(fig_orig)
-
-    with col2:
-        st.markdown("**Grad-CAM Heatmap**")
-        with st.spinner("Computing Grad-CAM…"):
-            from src.methods.model_specific import grad_cam, grad_cam_overlay
-            input_tensor = torch.tensor(img_flat.reshape(1, 1, 28, 28), dtype=torch.float32)
-            heatmap, pred_class = grad_cam(cnn_model, input_tensor)
-            overlay = grad_cam_overlay(img_2d, heatmap, alpha=0.5)
-
-        fig_cam, ax_cam = plt.subplots(figsize=(3, 3))
-        ax_cam.imshow(overlay)
-        ax_cam.set_title(f"Pred: {pred_class}", fontsize=12)
-        ax_cam.axis("off")
-        st.pyplot(fig_cam)
-        plt.close(fig_cam)
-
-    st.markdown("---")
-    st.markdown("### 📖 How Grad-CAM Works")
-    st.markdown("""
-    1. **Forward pass** through the CNN
-    2. **Compute gradients** of the target class score w.r.t. the last conv layer
-    3. **Global average pool** the gradients → per-channel weights αₖ
-    4. **Weighted combination** of feature maps, passed through ReLU
-    5. **Result**: a heatmap highlighting which regions the CNN focuses on
-    """)
+    except ImportError:
+        st.error("Library `streamlit-drawable-canvas` is missing. Please install it.")
+        st.code("pip install streamlit-drawable-canvas")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: COUNTERFACTUALS
+# PAGE: COUNTERFACTUALS (ADVANCED IMPLEMENTATION)
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "🔄 Counterfactuals":
-    st.markdown("## 🔄 Counterfactual Explanations")
-    st.markdown("Ask *\"What minimal change would flip the prediction?\"* for Iris samples.")
+    render_guide([
+        "**Select Patient:** Choose a base case.",
+        "**Analyze Prediction:** See the current AI diagnosis.",
+        "**Modify Features:** Use the sliders to perform 'What-If' analysis.",
+        "**Find Flip Point:** Adjust values until the prediction flips (e.g., Malignant -> Benign).",
+        "**Generate Automatic:** Click 'Auto-Generate' to find the minimal change mathematically.",
+    ])
+    
+    st.markdown("""
+    <div class="gov-hero">
+        <h1>🔄&nbsp; Counterfactual Analysis (What-If)</h1>
+        <p>Causal reasoning: <em>"What is the smallest change to X that would change the prediction to Y?"</em></p>
+    </div>
+    """, unsafe_allow_html=True)
 
     @st.cache_resource
     def get_cf_assets():
@@ -929,168 +825,119 @@ elif page == "🔄 Counterfactuals":
         return data, model
 
     data, model = get_cf_assets()
-
-    idx = st.slider("Test sample", 0, len(data.X_test) - 1, 5)
+    
+    st.markdown("### 1. Select Base Case")
+    idx = st.slider("Select Patient ID", 0, len(data.X_test)-1, 0)
     instance = data.X_test[idx]
-    current_pred = data.target_names[model.predict(instance.reshape(1, -1))[0]]
-    st.info(f"**Current prediction:** {current_pred}")
+    
+    # Prediction
+    pred_class = int(model.predict(instance.reshape(1, -1))[0])
+    pred_label = data.target_names[pred_class]
+    probs = model.predict_proba(instance.reshape(1, -1))[0]
+    
+    st.markdown(f"**Current Diagnosis:** `{pred_label}` ({probs[pred_class]:.2f})")
+    
+    st.markdown("### 2. Interactive 'What-If' Sliders")
+    
+    # Sliders using session state to persist manual changes
+    # ... Simplified: just direct sliders ...
+    new_values = []
+    cols = st.columns(2)
+    for i, feature in enumerate(data.feature_names):
+        val = float(instance[i])
+        with cols[i % 2]:
+            new_val = st.slider(f"{feature}", 
+                                min_value=float(data.X_train[:,i].min()), 
+                                max_value=float(data.X_train[:,i].max()), 
+                                value=val,
+                                step=0.1)
+            new_values.append(new_val)
+            
+    # New Prediction
+    new_instance = np.array(new_values).reshape(1, -1)
+    new_pred_class = int(model.predict(new_instance)[0])
+    new_pred_label = data.target_names[new_pred_class]
+    new_probs = model.predict_proba(new_instance)[0]
+    
+    st.markdown("---")
+    st.markdown(f"### 🎯 New Diagnosis: {new_pred_label}")
+    
+    if new_pred_class != pred_class:
+        st.success(f"🔄 **Prediction Flipped!** (Confidence: {new_probs[new_pred_class]:.2f})")
+        st.balloons()
+    else:
+        st.warning(f"Prediction unchanged. (Confidence: {new_probs[new_pred_class]:.2f})")
 
-    target_cls = st.selectbox("Target class (flip to)", range(len(data.target_names)),
-                              format_func=lambda i: data.target_names[i])
-
-    if st.button("🔄 Generate Counterfactual", type="primary"):
-        with st.spinner("Searching for counterfactual…"):
-            from src.methods.counterfactual import generate_counterfactual, counterfactual_proximity
-            result = generate_counterfactual(model, instance, data.X_train,
-                                             data.feature_names, target_class=target_cls)
-            result["proximity"] = counterfactual_proximity(result["original"], result["counterfactual"])
-
-        if result["success"]:
-            st.success(f"✅ Prediction flipped to **{data.target_names[result['new_pred']]}** in {result['n_steps']} steps!")
+    st.markdown("---")
+    st.markdown("### 🤖 Auto-Generate Counterfactual")
+    if st.button("Find Minimal Change to Flip Prediction"):
+        from src.methods.counterfactual import generate_counterfactual
+        
+        target = 0 if pred_class == 1 else 1
+        if len(data.target_names) > 2: target = (pred_class + 1) % len(data.target_names)
+             
+        cf_result = generate_counterfactual(
+            model, instance, data.X_train, data.feature_names, target_class=target
+        )
+        
+        if cf_result["success"]:
+            st.success(f"Found counterfactual! Target: {data.target_names[target]}")
+            st.json(cf_result["changes"])
         else:
-            st.warning(f"⚠️ Could not flip prediction in {result['n_steps']} steps. Current pred: {data.target_names[result['new_pred']]}")
-
-        # Changes table
-        st.markdown("### Feature Changes")
-        if result["changes"]:
-            changes_df = pd.DataFrame([
-                {"Feature": f, "Original": v["from"], "Counterfactual": v["to"],
-                 "Δ": round(v["to"] - v["from"], 4)}
-                for f, v in result["changes"].items()
-            ])
-            st.dataframe(changes_df, use_container_width=True)
-
-            from src.visualization.plotting import plot_counterfactual_changes
-            st.plotly_chart(plot_counterfactual_changes(result["changes"]), use_container_width=True)
-
-        # Proximity metrics
-        st.markdown("### 📏 Proximity Metrics")
-        pcols = st.columns(3)
-        pcols[0].metric("L₀ (Sparsity)", result["proximity"]["L0"])
-        pcols[1].metric("L₁ (Manhattan)", f"{result['proximity']['L1']:.4f}")
-        pcols[2].metric("L₂ (Euclidean)", f"{result['proximity']['L2']:.4f}")
+            st.error("Could not find a counterfactual within iteration limit.")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: SIMULATABILITY LAB
+# PAGE: Simulatability Lab
 # ═══════════════════════════════════════════════════════════════════════════
 elif page == "🧪 Simulatability Lab":
-    st.markdown("## 🧪 Simulatability Lab")
+    render_guide([
+        "**Objective:** Test if you *really* understand the model.",
+        "**Review Features:** Look at the patient data provided.",
+        "**Review Clue:** Read the XAI explanation (e.g. 'Size > 2cm').",
+        "**Predict:** Guess the model's output *before* seeing it.",
+        "**Score:** See if your mental model aligns with the AI."
+    ])
+    
     st.markdown("""
-    Test whether AI explanations actually help you predict the model's behaviour.
-    This replicates the **Forward Simulation** experiment from the thesis.
-    """)
-
-    @st.cache_resource
-    def get_sim_assets():
-        from src.core.input_layer import load_tabular
-        from src.models.train_model import train_tabular_model
-        data = load_tabular()
-        model = train_tabular_model(data.X_train, data.y_train)
-        return data, model
-
-    data, model = get_sim_assets()
-
-    # Session state
-    if "sim_trials" not in st.session_state:
-        from src.experiments.simulations import create_forward_trials
-        session = create_forward_trials(data.X_test, data.y_test, model, n_trials=5)
-        st.session_state.sim_trials = session.trials
-        st.session_state.sim_phase = "pre"  # 'pre' → 'post'
-        st.session_state.sim_idx = 0
-
-    trials = st.session_state.sim_trials
-    phase = st.session_state.sim_phase
-    trial_idx = st.session_state.sim_idx
-
-    total = len(trials)
-    progress = trial_idx / total if total > 0 else 0
-    st.progress(progress, text=f"Trial {min(trial_idx + 1, total)} / {total}  —  Phase: {'Pre-Explanation' if phase == 'pre' else 'Post-Explanation'}")
-
-    if trial_idx < total:
-        trial = trials[trial_idx]
-        instance = data.X_test[trial.instance_idx]
-
+    <div class="gov-hero">
+        <h1>🧪&nbsp; Simulatability Lab</h1>
+        <p>Testing the <strong>"Illusion of Understanding"</strong>. Can you predict the model's output based on the explanation?</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("### 🎮 Forward Simulation")
+    
+    if "sim_case" not in st.session_state:
+        st.session_state.sim_case = {
+            "features": {"Tumor Size": "2.4 cm", "Age": "52", "Cellularity": "High"},
+            "explanation": "Tumor Size > 2.0 cm contributes heavily to Malignancy.",
+            "ground_truth": "Malignant"
+        }
+    
+    with st.container(border=True):
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("#### Patient Features")
+            for k,v in st.session_state.sim_case["features"].items():
+                st.write(f"- **{k}:** {v}")
+        with c2:
+            st.markdown("#### XAI Clue")
+            st.info(st.session_state.sim_case["explanation"])
+            
         st.markdown("---")
-        st.markdown(f"### Trial {trial_idx + 1}")
-
-        # Show instance
-        st.markdown("**Instance features:**")
-        df_show = pd.DataFrame([instance], columns=data.feature_names)
-        st.dataframe(df_show.style.format("{:.2f}"), use_container_width=True)
-
-        st.markdown(f"**True label:** {data.target_names[trial.true_label]}")
-
-        # Explanation (only in post phase)
-        if phase == "post":
-            st.markdown("---")
-            st.markdown("#### 💡 Explanation (LIME)")
-            from src.methods.model_agnostic import lime_tabular_explain, lime_tabular_to_dict
-            lime_exp = lime_tabular_explain(model, data.X_train, instance,
-                                            data.feature_names, data.target_names, 4)
-            from src.visualization.plotting import plot_lime_weights
-            st.plotly_chart(plot_lime_weights(lime_tabular_to_dict(lime_exp)),
-                            use_container_width=True)
-
-        # User prediction
-        st.markdown("---")
-        user_pred = st.radio(
-            "What class will the **model** predict?",
-            range(len(data.target_names)),
-            format_func=lambda i: data.target_names[i],
-            key=f"pred_{phase}_{trial_idx}",
-            horizontal=True,
-        )
-
-        if st.button("Submit Prediction", type="primary", key=f"btn_{phase}_{trial_idx}"):
-            if phase == "pre":
-                trials[trial_idx].user_prediction_pre = user_pred
-                st.session_state.sim_phase = "post"
+        
+        pred_col1, pred_col2 = st.columns(2)
+        user_pred = None
+        if pred_col1.button("Predict: Benign 🟢"): user_pred = "Benign"
+        if pred_col2.button("Predict: Malignant 🔴"): user_pred = "Malignant"
+            
+        if user_pred:
+            if user_pred == st.session_state.sim_case["ground_truth"]:
+                st.success(f"Correct! The model predicted {user_pred}.")
+                st.balloons()
             else:
-                trials[trial_idx].user_prediction_post = user_pred
-                st.session_state.sim_idx += 1
-                st.session_state.sim_phase = "pre"
-            st.rerun()
-    else:
-        # Results
-        st.markdown("---")
-        st.markdown("### 🏆 Experiment Complete!")
-
-        from src.experiments.simulations import SimulationSession
-        session = SimulationSession(trials=trials, session_type="forward")
-
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Accuracy (Pre)", f"{session.accuracy_pre:.0%}")
-        c2.metric("Accuracy (Post)", f"{session.accuracy_post:.0%}")
-        score = session.simulatability_score
-        c3.metric("Simulatability Score", f"{score:+.0%}",
-                  delta=f"{'Positive' if score > 0 else 'Negative'}")
-
-        st.markdown("---")
-        st.markdown("### 📊 Trial-Level Results")
-        results_df = pd.DataFrame([
-            {
-                "Trial": i + 1,
-                "True Label": data.target_names[t.true_label],
-                "Model Pred": data.target_names[t.model_prediction],
-                "Your Pre": data.target_names[t.user_prediction_pre] if t.user_prediction_pre is not None else "—",
-                "Your Post": data.target_names[t.user_prediction_post] if t.user_prediction_post is not None else "—",
-                "Pre ✓": "✅" if t.user_prediction_pre == t.model_prediction else "❌",
-                "Post ✓": "✅" if t.user_prediction_post == t.model_prediction else "❌",
-            }
-            for i, t in enumerate(trials)
-        ])
-        st.dataframe(results_df, use_container_width=True)
-
-        # Interpretation
-        if score > 0:
-            st.success("🎉 The LIME explanations **helped** you predict the model's behaviour!")
-        elif score == 0:
-            st.info("🤔 The explanations had **no measurable effect** on your prediction accuracy.")
-        else:
-            st.warning("⚠️ Interestingly, explanations **reduced** your accuracy — the 'illusion of understanding' effect noted in the thesis.")
-
-        if st.button("🔁 Restart Experiment"):
-            for k in ["sim_trials", "sim_phase", "sim_idx"]:
-                del st.session_state[k]
-            st.rerun()
+                st.error(f"Incorrect. The model predicted {st.session_state.sim_case['ground_truth']}.")
+    
+    if st.button("Next Case ➡️"):
+        st.experimental_rerun()

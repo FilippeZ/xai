@@ -21,7 +21,7 @@ from sklearn.model_selection import train_test_split
 
 @dataclass
 class TabularData:
-    """Container for tabular datasets."""
+    """Container for tabular datasets with constraint specification."""
     X_train: np.ndarray
     X_test: np.ndarray
     y_train: np.ndarray
@@ -29,6 +29,36 @@ class TabularData:
     feature_names: List[str]
     target_names: List[str]
     name: str = "tabular"
+    immutable_features: List[str] = field(default_factory=list)
+    mutable_features: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.mutable_features:
+            self.mutable_features = [f for f in self.feature_names if f not in self.immutable_features]
+
+
+class ClinicalDataLayer:
+    """
+    Level 1: Input & Constraints Layer (Clinical Data Layer)
+    Standardises clinical data and enforces plausibility by declaring immutable features.
+    """
+    def __init__(self, data: TabularData, immutable_features: Optional[List[str]] = None):
+        self.data = data
+        if immutable_features is not None:
+            self.data.immutable_features = immutable_features
+            self.data.mutable_features = [f for f in data.feature_names if f not in immutable_features]
+
+    def validate_plausibility(self, original_instance: np.ndarray, modified_instance: np.ndarray) -> bool:
+        """
+        Check that no immutable feature (e.g., age, sex, genetics) has been changed.
+        """
+        for feat in self.data.immutable_features:
+            if feat in self.data.feature_names:
+                idx = self.data.feature_names.index(feat)
+                if not np.isclose(original_instance[idx], modified_instance[idx], atol=1e-4):
+                    return False
+        return True
+
 
 
 @dataclass
