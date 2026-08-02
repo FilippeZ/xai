@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="XAIGO Logo" width="220" style="border-radius: 20px; box-shadow: 0 0 30px rgba(0,210,220,0.3);" />
+<img src="assets/logo.png" alt="XAIGO Logo" width="260" />
 
 # ⚖️ XAIGO — Explainable AI Governance Middleware
 
